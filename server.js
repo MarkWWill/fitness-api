@@ -8,8 +8,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-
 app.get("/", async (req, res) => {
+  try {
+    const result = await query("SELECT NOW() as now");
+    res.json({ ok: true, now: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      error: err.message
+    });
+  }
+});
+
+app.get("/home", async (req, res) => {
   try {
     await query("SELECT 1");
     res.json({ message: "Fitness API running" });
@@ -50,6 +61,8 @@ app.post("/users", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
